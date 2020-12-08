@@ -4,7 +4,9 @@ import argparse
 import datetime 
 import numpy as np 
 import matplotlib.pyplot as plt 
-from mnistDataLoader import load_data
+from os.path import join 
+from mnistDataLoader import MnistDataloader
+
 
 # Define Neural Network class 
 class NeuralNetwork():
@@ -132,7 +134,15 @@ if __name__ == "__main__":
   parser.add_argument('--learning_rate', required =True, type=float, help='learning rate')
   parser.add_argument('--hidden_layers', required =True, nargs='*', type=int, help='hidden layer sizes')
 
-  (train_x, train_y), (test_x, test_y) = load_data()
+
+  input_path = '/training/Datasets'
+  training_images_filepath = join(input_path, 'train-images-idx3-ubyte')
+  training_labels_filepath = join(input_path, 'train-labels-idx1-ubyte')
+  test_images_filepath = join(input_path, 't10k-images-idx3-ubyte')
+  test_labels_filepath = join(input_path, 't10k-labels-idx1-ubyte')
+
+  mnist_dataloader = MnistDataloader(training_images_filepath, training_labels_filepath, test_images_filepath, test_labels_filepath)
+  (train_x, train_y), (test_x, test_y) = mnist_dataloader.load_data()
 
   args = parser.parse_args()
   architecture = [784]
