@@ -134,7 +134,7 @@ if __name__ == "__main__":
   parser.add_argument('--learning_rate', required =True, type=float, help='learning rate')
   parser.add_argument('--hidden_layers', required =True, nargs='*', type=int, help='hidden layer sizes')
 
-
+  print("Importing dataset from volume")
   input_path = '/training/Datasets'
   training_images_filepath = join(input_path, 'train-images-idx3-ubyte')
   training_labels_filepath = join(input_path, 'train-labels-idx1-ubyte')
@@ -150,12 +150,18 @@ if __name__ == "__main__":
     architecture.append(args.hidden_layers[i])
   architecture.append(10)
   
+  print("Initialising neural network...")
   network = NeuralNetwork(architecture, int(args.batch_size), float(args.learning_rate))
+
+  print("Training neural network...")
   loss = network.train(int(args.nr_batches))
+
+  print("Testing neural network...")
   success_rate = network.test()
 
+  print("Writing data to file...")
   # Write to EBS checkpoint data bank 
-  with open('/training/training-{}-{}-{}-{}.csv'.format(args.batch_size, args.nr_batches, args.learning_rate, *args.hidden_layers), mode='w') as data:
+  with open('/training/Results/training-{}-{}-{}-{}.csv'.format(args.batch_size, args.nr_batches, args.learning_rate, *args.hidden_layers), mode='w') as data:
     data_writer = csv.writer(data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     data_writer.writerow([success_rate])
     data_writer.writerow(loss)
