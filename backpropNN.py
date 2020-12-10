@@ -150,19 +150,35 @@ if __name__ == "__main__":
     architecture.append(args.hidden_layers[i])
   architecture.append(10)
   
-  print("Initialising neural network...")
-  network = NeuralNetwork(architecture, int(args.batch_size), float(args.learning_rate))
+  try: 
+    network = NeuralNetwork(architecture, int(args.batch_size), float(args.learning_rate))
+  except:
+    with open('/training/Logs/log_file.txt', 'a') as log_file:
+      log_file.write('{}-{}-{}-{}: ERROR: Cannot initiate NN model.\n').format(args.batch_size, args.nr_batches, args.learning_rate, *args.hidden_layers)
+      exit()
+  
+  try:
+    loss = network.train(int(args.nr_batches))
+  except:
+    with open('/training/Logs/log_file.txt', 'a') as log_file:
+      log_file.write('{}-{}-{}-{}: ERROR: Training unsuccessful.\n').format(args.batch_size, args.nr_batches, args.learning_rate, *args.hidden_layers)
+      exit()
 
-  print("Training neural network...")
-  loss = network.train(int(args.nr_batches))
+  try: 
+    success_rate = network.test()
+  except:
+    with open('/training/Logs/log_file.txt', 'a') as log_file:
+      log_file.write('{}-{}-{}-{}: ERROR: Testing unsuccessful.\n').format(args.batch_size, args.nr_batches, args.learning_rate, *args.hidden_layers)
+      exit()
 
-  print("Testing neural network...")
-  success_rate = network.test()
-
-  print("Writing data to file...")
-  # Write to EBS checkpoint data bank 
-  with open('/training/Results/training-{}-{}-{}-{}.csv'.format(args.batch_size, args.nr_batches, args.learning_rate, *args.hidden_layers), mode='w') as data:
-    data_writer = csv.writer(data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    data_writer.writerow([success_rate])
-    data_writer.writerow(loss)
-    data_writer.writerows(network.Weights)
+  try:
+    # Write to EBS checkpoint data bank 
+    with open('/training/Results/training-{}-{}-{}-{}.csv'.format(args.batch_size, args.nr_batches, args.learning_rate, *args.hidden_layers), mode='w') as data:
+      data_writer = csv.writer(data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+      data_writer.writerow([success_rate])
+      data_writer.writerow(loss)
+      data_writer.writerows(network.Weights)
+  except:
+    with open('/training/Logs/log_file.txt', 'a') as log_file:
+      log_file.write('{}-{}-{}-{}: ERROR: Writing result unsuccessful.\n').format(args.batch_size, args.nr_batches, args.learning_rate, *args.hidden_layers)
+      exit()
