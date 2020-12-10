@@ -157,7 +157,7 @@ if __name__ == "__main__":
   try:
     loss = network.train(int(args.nr_batches))
   except:
-    log_file.write('{}-{}-{}-{}: ERROR: Training unsuccessful.\n').format(args.batch_size, args.nr_batches, args.learning_rate, *args.hidden_layers)
+    log_file.write('{}-{}-{}-{}: ERROR: Training unsuccessful.\n'.format(args.batch_size, args.nr_batches, args.learning_rate, *args.hidden_layers))
     exit()
 
   success_rate = network.test()
@@ -169,5 +169,5 @@ if __name__ == "__main__":
     data_writer.writerow(loss)
     data_writer.writerows(network.Weights)
 
-  log_file.write('{}-{}-{}-{}: SUCCESS: Training complete.\n').format(args.batch_size, args.nr_batches, args.learning_rate, *args.hidden_layers)
+  log_file.write('{}-{}-{}-{}: SUCCESS: Training complete.\n'.format(args.batch_size, args.nr_batches, args.learning_rate, *args.hidden_layers))
   log_file.close()
